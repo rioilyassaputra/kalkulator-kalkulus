@@ -1,0 +1,548 @@
+<!-- Home Tab -->
+<div id="home" class="tab-content active">
+  <!-- Hero Section -->
+  <section
+    class="hero-gradient text-white rounded-2xl shadow-xl overflow-hidden mb-12"
+  >
+    <div class="container mx-auto px-6 py-16 md:py-24">
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 mb-10 md:mb-0">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">
+            Jelajahi Dunia Kalkulus
+          </h1>
+          <p class="text-xl mb-8 opacity-90">
+            Platform interaktif untuk mempelajari dan mempraktikkan
+            konsep-konsep matematika dan kalkulus dengan visualisasi yang
+            menarik.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <button
+              onclick="showTab('calculus')"
+              class="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg"
+            >
+              Mulai Belajar <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+            <button
+              onclick="scrollToFeatures()"
+              class="bg-transparent border-2 border-white hover:bg-white hover:bg-opacity-10 font-medium py-3 px-6 rounded-lg transition duration-300"
+            >
+              <i class="fas fa-book-open mr-2"></i> Pelajari Lebih Lanjut
+            </button>
+          </div>
+        </div>
+        <div class="md:w-1/2 flex justify-center">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png"
+            alt="Math illustration"
+            class="w-full max-w-md h-auto animate-float"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="mb-16">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">
+        Kenapa Memilih MathLab?
+      </h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">
+        Kami menyediakan alat-alat terbaik untuk membantu Anda memahami konsep
+        matematika dengan lebih mudah dan menyenangkan.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div
+        class="math-card bg-white p-8 rounded-xl shadow-md hover:shadow-lg text-center"
+      >
+        <div class="feature-icon bg-blue-100 text-blue-600 mx-auto">
+          <i class="fas fa-function"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Kalkulator Kalkulus</h3>
+        <p class="text-gray-600">
+          Hitung turunan, integral, limit, dan lainnya dengan langkah-langkah
+          penyelesaian yang jelas dan mudah dipahami.
+        </p>
+      </div>
+      <div
+        class="math-card bg-white p-8 rounded-xl shadow-md hover:shadow-lg text-center"
+      >
+        <div class="feature-icon bg-green-100 text-green-600 mx-auto">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Visualisasi 3D Interaktif</h3>
+        <p class="text-gray-600">
+          Jelajahi grafik fungsi dalam 3D dengan kontrol penuh untuk memahami
+          konsep geometri dan kalkulus secara visual.
+        </p>
+      </div>
+      <div
+        class="math-card bg-white p-8 rounded-xl shadow-md hover:shadow-lg text-center"
+      >
+        <div class="feature-icon bg-purple-100 text-purple-600 mx-auto">
+          <i class="fas fa-book"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Pustaka Rumus Lengkap</h3>
+        <p class="text-gray-600">
+          Koleksi lengkap rumus matematika dan kalkulus dengan penjelasan
+          mendalam dan contoh penerapannya.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3D Graph Section -->
+  <section class="mb-16">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800">Visualisasi Fungsi 3D</h2>
+      <div class="mt-4 md:mt-0">
+        <input
+          type="text"
+          id="custom-function"
+          placeholder="Masukkan fungsi (e.g., x^2 + y^2)"
+          class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          onclick="plotCustomFunction()"
+          class="ml-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition"
+        >
+          Plot
+        </button>
+      </div>
+    </div>
+
+    <div id="graph3d-container">
+      <div id="graph3d"></div>
+      <div class="graph-controls">
+        <button onclick="plot3DFunction('x^2 + y^2')" class="graph-btn active">
+          Paraboloid
+        </button>
+        <button onclick="plot3DFunction('sin(x) + cos(y)')" class="graph-btn">
+          Gelombang
+        </button>
+        <button onclick="plot3DFunction('x*y/2')" class="graph-btn">
+          Bidang Miring
+        </button>
+        <button
+          onclick="plot3DFunction('sin(sqrt(x^2 + y^2))')"
+          class="graph-btn"
+        >
+          Radial
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Functions Section -->
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold text-gray-800 mb-8">Fungsi Populer</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        class="function-card bg-white group"
+        onclick="plot3DFunction('x^2 + y^2')"
+      >
+        <div class="p-6">
+          <div class="text-blue-600 mb-3">
+            <i class="fas fa-mountain text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Paraboloid</h3>
+          <p class="text-gray-600 mb-4">\( f(x,y) = x^2 + y^2 \)</p>
+          <button
+            class="text-blue-600 font-medium group-hover:text-blue-700 transition"
+          >
+            Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+      <div
+        class="function-card bg-white group"
+        onclick="plot3DFunction('sin(x) + cos(y)')"
+      >
+        <div class="p-6">
+          <div class="text-green-600 mb-3">
+            <i class="fas fa-water text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Gelombang Sinus</h3>
+          <p class="text-gray-600 mb-4">\( f(x,y) = \sin(x) + \cos(y) \)</p>
+          <button
+            class="text-green-600 font-medium group-hover:text-green-700 transition"
+          >
+            Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+      <div
+        class="function-card bg-white group"
+        onclick="plot3DFunction('sin(sqrt(x^2 + y^2))')"
+      >
+        <div class="p-6">
+          <div class="text-purple-600 mb-3">
+            <i class="fas fa-bullseye text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Gelombang Radial</h3>
+          <p class="text-gray-600 mb-4">
+            \( f(x,y) = \sin(\sqrt{x^2 + y^2}) \)
+          </p>
+          <button
+            class="text-purple-600 font-medium group-hover:text-purple-700 transition"
+          >
+            Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+      <div
+        class="function-card bg-white group"
+        onclick="plot3DFunction('x*y/2')"
+      >
+        <div class="p-6">
+          <div class="text-yellow-600 mb-3">
+            <i class="fas fa-chart-area text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Bidang Miring</h3>
+          <p class="text-gray-600 mb-4">\( f(x,y) = \frac{xy}{2} \)</p>
+          <button
+            class="text-yellow-600 font-medium group-hover:text-yellow-700 transition"
+          >
+            Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+      <div
+        class="function-card bg-white group"
+        onclick="plot3DFunction('(x^2 - y^2)/10')"
+      >
+        <div class="p-6">
+          <div class="text-red-600 mb-3">
+            <i class="fas fa-horse-head text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Pelana Kuda</h3>
+          <p class="text-gray-600 mb-4">\( f(x,y) = \frac{x^2 - y^2}{10} \)</p>
+          <button
+            class="text-red-600 font-medium group-hover:text-red-700 transition"
+          >
+            Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+      <div
+        class="function-card bg-white group"
+        onclick="plot3DFunction('sqrt(x^2 + y^2)')"
+      >
+        <div class="p-6">
+          <div class="text-indigo-600 mb-3">
+            <i class="fas fa-cone text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Kerucut</h3>
+          <p class="text-gray-600 mb-4">\( f(x,y) = \sqrt{x^2 + y^2} \)</p>
+          <button
+            class="text-indigo-600 font-medium group-hover:text-indigo-700 transition"
+          >
+            Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Calculus Calculator Tab -->
+<div id="calculus" class="tab-content">
+  <section class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">
+      🧠 Kalkulator Kalkulus
+    </h2>
+
+    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+      <div class="mb-4">
+        <label for="rumus" class="block text-sm font-medium text-gray-700 mb-2"
+          >Pilih Rumus:</label
+        >
+        <select
+          id="rumus"
+          onchange="tampilkanForm()"
+          class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+        >
+          <option value="">-- Pilih Rumus --</option>
+          <option value="turunan_pangkat">Turunan Pangkat: f(x) = axⁿ</option>
+          <option value="turunan_trigonometri">
+            Turunan Trigonometri: f(x) = a sin(bx)
+          </option>
+          <option value="integral_pangkat">Integral Pangkat: ∫ axⁿ dx</option>
+          <option value="integral_eksponen">
+            Integral Eksponensial: ∫ aeᵇˣ dx
+          </option>
+          <option value="limit">Limit: limₓ→c f(x)</option>
+          <option value="logaritma">Logaritma: logₑ(x)</option>
+          <option value="fungsi_invers">Invers Fungsi: f⁻¹(x)</option>
+          <option value="garis_lurus">Persamaan Garis Lurus: y = mx + c</option>
+          <option value="lingkaran">
+            Persamaan Lingkaran: (x - a)² + (y - b)² = r²
+          </option>
+        </select>
+      </div>
+
+      <div
+        id="formInput"
+        class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"
+      ></div>
+
+      <div class="flex flex-wrap gap-3">
+        <button
+          onclick="hitung()"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center"
+        >
+          <i class="fas fa-calculator mr-2"></i> Hitung
+        </button>
+        <button
+          onclick="resetForm()"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition flex items-center"
+        >
+          <i class="fas fa-redo mr-2"></i> Reset
+        </button>
+        <button
+          onclick="salinKeClipboard()"
+          id="salinBtn"
+          disabled
+          class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center"
+        >
+          <i class="fas fa-copy mr-2"></i> Salin Soal
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="output"
+      class="bg-white rounded-xl shadow-md p-6 mb-6 min-h-32"
+    ></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Grafik 2D</h3>
+        <canvas id="grafik" width="400" height="300" class="w-full"></canvas>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">📚 Arsip Soal</h3>
+        <ul id="daftarArsip" class="space-y-2 max-h-64 overflow-y-auto"></ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Simple Calculator Tab -->
+<div id="calculator" class="tab-content">
+  <section class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">
+      🧮 Kalkulator Sederhana
+    </h2>
+
+    <div class="bg-white rounded-xl shadow-md p-6 max-w-md mx-auto">
+      <div class="mb-4">
+        <input
+          type="text"
+          id="calcDisplay"
+          class="w-full px-4 py-3 text-right text-2xl font-semibold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          readonly
+        />
+      </div>
+
+      <div class="grid grid-cols-4 gap-3">
+        <button
+          onclick="calcClear()"
+          class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition"
+        >
+          C
+        </button>
+        <button
+          onclick="calcBackspace()"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          ⌫
+        </button>
+        <button
+          onclick="calcPercent()"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          %
+        </button>
+        <button
+          onclick="calcOperator('/')"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition"
+        >
+          ÷
+        </button>
+
+        <button
+          onclick="calcNumber('7')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          7
+        </button>
+        <button
+          onclick="calcNumber('8')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          8
+        </button>
+        <button
+          onclick="calcNumber('9')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          9
+        </button>
+        <button
+          onclick="calcOperator('*')"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition"
+        >
+          ×
+        </button>
+
+        <button
+          onclick="calcNumber('4')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          4
+        </button>
+        <button
+          onclick="calcNumber('5')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          5
+        </button>
+        <button
+          onclick="calcNumber('6')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          6
+        </button>
+        <button
+          onclick="calcOperator('-')"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition"
+        >
+          -
+        </button>
+
+        <button
+          onclick="calcNumber('1')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          1
+        </button>
+        <button
+          onclick="calcNumber('2')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          2
+        </button>
+        <button
+          onclick="calcNumber('3')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          3
+        </button>
+        <button
+          onclick="calcOperator('+')"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition"
+        >
+          +
+        </button>
+
+        <button
+          onclick="calcNumber('0')"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition col-span-2"
+        >
+          0
+        </button>
+        <button
+          onclick="calcDecimal()"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-lg transition"
+        >
+          .
+        </button>
+        <button
+          onclick="calcEquals()"
+          class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition"
+        >
+          =
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- About Tab -->
+<div id="about" class="tab-content">
+  <section class="mb-8">
+    <div
+      class="bg-white rounded-xl shadow-md overflow-hidden max-w-4xl mx-auto"
+    >
+      <div class="p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Tentang MathLab</h2>
+
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-700 mb-3">🎯 Tujuan</h3>
+          <p class="text-gray-600 mb-4">
+            MathLab dibuat untuk membantu siswa dan mahasiswa memahami
+            konsep-konsep matematika dan kalkulus melalui visualisasi interaktif
+            dan alat perhitungan yang mudah digunakan.
+          </p>
+        </div>
+
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-700 mb-3">✨ Fitur</h3>
+          <ul class="list-disc pl-5 text-gray-600 space-y-2">
+            <li>
+              Kalkulator kalkulus untuk turunan, integral, limit, dan lainnya
+            </li>
+            <li>Visualisasi grafik 2D dan 3D</li>
+            <li>Kalkulator matematika dasar</li>
+            <li>Pustaka rumus kalkulus</li>
+            <li>Antarmuka yang responsif dan mudah digunakan</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold text-gray-700 mb-3">🛠 Teknologi</h3>
+          <div class="flex flex-wrap gap-3">
+            <span
+              class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+              >HTML5</span
+            >
+            <span
+              class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm"
+              >JavaScript</span
+            >
+            <span
+              class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
+              >MathJax</span
+            >
+            <span
+              class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm"
+              >Three.js</span
+            >
+            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm"
+              >Chart.js</span
+            >
+            <span
+              class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm"
+              >Tailwind CSS</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 px-8 py-6 border-t border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-700 mb-3">✉️ Kontak</h3>
+        <p class="text-gray-600">
+          Untuk pertanyaan atau masukan, silakan hubungi kami di
+          <a
+            href="mailto:info@mathlab.com"
+            class="text-blue-600 hover:underline"
+            >info@mathlab.com</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
