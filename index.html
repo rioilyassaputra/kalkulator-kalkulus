@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MathLab - Kalkulator Kalkulus</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      .content-text {
+        transition: font-size 0.3s ease;
+      }
+      .progress-bar {
+        transition: width 0.5s ease;
+      }
+      .level-indicator {
+        transition: all 0.5s ease;
+      }
+      .math-card {
+        transition: all 0.3s ease;
+      }
+      .math-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      #graph3d-container {
+        width: 100%;
+        height: 500px;
+        position: relative;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      #graph3d {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      }
+      .nav-link {
+        position: relative;
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: #3b82f6;
+        transition: width 0.3s ease;
+      }
+      .nav-link:hover::after {
+        width: 100%;
+      }
+      .active-nav::after {
+        width: 100%;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .hero-gradient {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      }
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+        font-size: 1.75rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+      .function-card {
+        transition: all 0.3s ease;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      .function-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      .graph-controls {
+        position: absolute;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.5rem;
+        z-index: 10;
+      }
+      .graph-btn {
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .graph-btn:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      }
+      .graph-btn.active {
+        background: #3b82f6;
+        color: white;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen font-sans">
+    <!-- Header with Navigation -->
+    <header
+      class="bg-gradient-to-r from-blue-600 to-indigo-800 text-white shadow-lg sticky top-0 z-50"
+    >
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <a href="">
+            <div class="flex items-center mb-4 md:mb-0">
+              <i class="fas fa-square-root-alt text-3xl mr-3"></i>
+              <h1 class="text-2xl font-bold">MathLab</h1>
+            </div>
+          </a>
+          <nav class="flex flex-wrap justify-center gap-1 md:gap-6">
+            <a
+              href="#"
+              class="nav-link active-nav px-3 py-2 rounded-md text-sm font-medium"
+              onclick="showTab('home')"
+            >
+              <i class="fas fa-home mr-1"></i> Beranda
+            </a>
+            <a
+              href="#"
+              class="nav-link px-3 py-2 rounded-md text-sm font-medium"
+              onclick="showTab('calculus')"
+            >
+              <i class="fas fa-book-open mr-1"></i> E-Learning
+            </a>
+            <a
+              href="#"
+              class="nav-link px-3 py-2 rounded-md text-sm font-medium"
+              onclick="showTab('calculator')"
+            >
+              <i class="fas fa-calculator mr-1"></i> Kalkulator
+            </a>
+            <a
+              href="#"
+              class="nav-link px-3 py-2 rounded-md text-sm font-medium"
+              onclick="showTab('about')"
+            >
+              <i class="fas fa-info-circle mr-1"></i> Tentang
+            </a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+      <!-- Home Tab -->
+      <div id="home" class="tab-content active">
+        <!-- Hero Section -->
+        <section
+          class="hero-gradient text-white rounded-2xl shadow-xl overflow-hidden mb-12"
+        >
+          <div class="container mx-auto px-6 py-16 md:py-24">
+            <div class="flex flex-col md:flex-row items-center">
+              <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                  Jelajahi Dunia Kalkulus
+                </h1>
+                <p class="text-xl mb-8 opacity-90">
+                  Platform interaktif untuk mempelajari dan mempraktikkan
+                  konsep-konsep matematika dan kalkulus dengan visualisasi yang
+                  menarik.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                  <button
+                    onclick="showTab('calculus')"
+                    class="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg"
+                  >
+                    Mulai Belajar <i class="fas fa-arrow-right ml-2"></i>
+                  </button>
+                  <button
+                    onclick="scrollToFeatures()"
+                    class="bg-transparent border-2 border-white hover:bg-white hover:bg-opacity-10 font-medium py-3 px-6 rounded-lg transition duration-300"
+                  >
+                    <i class="fas fa-book-open mr-2"></i> Pelajari Lebih Lanjut
+                  </button>
+                </div>
+              </div>
+              <div class="md:w-1/2 flex justify-center">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png"
+                  alt="Math illustration"
+                  class="w-full max-w-md h-auto animate-float"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="mb-16">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">
+              Kenapa Memilih MathLab?
+            </h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+              Kami menyediakan alat-alat terbaik untuk membantu Anda memahami
+              konsep matematika dengan lebih mudah dan menyenangkan.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div
+              class="math-card bg-white p-8 rounded-xl shadow-md hover:shadow-lg text-center"
+            >
+              <div class="feature-icon bg-blue-100 text-blue-600 mx-auto">
+                <i class="fas fa-calculator"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">Kalkulator Kalkulus</h3>
+              <p class="text-gray-600">
+                Hitung turunan, integral, limit, dan lainnya dengan
+                langkah-langkah penyelesaian yang jelas dan mudah dipahami.
+              </p>
+            </div>
+            <div
+              class="math-card bg-white p-8 rounded-xl shadow-md hover:shadow-lg text-center"
+            >
+              <div class="feature-icon bg-green-100 text-green-600 mx-auto">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">
+                Visualisasi 3D Interaktif
+              </h3>
+              <p class="text-gray-600">
+                Jelajahi grafik fungsi dalam 3D dengan kontrol penuh untuk
+                memahami konsep geometri dan kalkulus secara visual.
+              </p>
+            </div>
+            <div
+              class="math-card bg-white p-8 rounded-xl shadow-md hover:shadow-lg text-center"
+            >
+              <div class="feature-icon bg-purple-100 text-purple-600 mx-auto">
+                <i class="fas fa-book-open"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">Pustaka Rumus Lengkap</h3>
+              <p class="text-gray-600">
+                Koleksi lengkap rumus matematika dan kalkulus dengan penjelasan
+                mendalam dan contoh penerapannya.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3D Graph Section -->
+        <section class="mb-16">
+          <div
+            class="flex flex-col md:flex-row justify-between items-center mb-8"
+          >
+            <h2 class="text-3xl font-bold text-gray-800">
+              Visualisasi Fungsi 3D
+            </h2>
+            <div class="mt-4 md:mt-0">
+              <input
+                type="text"
+                id="custom-function"
+                placeholder="Masukkan fungsi (e.g., x^2 + y^2)"
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onclick="plotCustomFunction()"
+                class="ml-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition"
+              >
+                Plot
+              </button>
+            </div>
+          </div>
+
+          <div id="graph3d-container">
+            <div id="graph3d"></div>
+            <div class="graph-controls">
+              <button
+                onclick="plot3DFunction('x^2 + y^2')"
+                class="graph-btn active"
+              >
+                Paraboloid
+              </button>
+              <button
+                onclick="plot3DFunction('sin(x) + cos(y)')"
+                class="graph-btn"
+              >
+                Gelombang
+              </button>
+              <button onclick="plot3DFunction('x*y/2')" class="graph-btn">
+                Bidang Miring
+              </button>
+              <button
+                onclick="plot3DFunction('sin(sqrt(x^2 + y^2))')"
+                class="graph-btn"
+              >
+                Radial
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Popular Functions Section -->
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold text-gray-800 mb-8">Fungsi Populer</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              class="function-card bg-white group"
+              onclick="plot3DFunction('x^2 + y^2')"
+            >
+              <div class="p-6">
+                <div class="text-blue-600 mb-3">
+                  <i class="fas fa-mountain text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Paraboloid</h3>
+                <p class="text-gray-600 mb-4">\( f(x,y) = x^2 + y^2 \)</p>
+                <button
+                  class="text-blue-600 font-medium group-hover:text-blue-700 transition"
+                >
+                  Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+            <div
+              class="function-card bg-white group"
+              onclick="plot3DFunction('sin(x) + cos(y)')"
+            >
+              <div class="p-6">
+                <div class="text-green-600 mb-3">
+                  <i class="fas fa-water text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Gelombang Sinus</h3>
+                <p class="text-gray-600 mb-4">
+                  \( f(x,y) = \sin(x) + \cos(y) \)
+                </p>
+                <button
+                  class="text-green-600 font-medium group-hover:text-green-700 transition"
+                >
+                  Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+            <div
+              class="function-card bg-white group"
+              onclick="plot3DFunction('sin(sqrt(x^2 + y^2))')"
+            >
+              <div class="p-6">
+                <div class="text-purple-600 mb-3">
+                  <i class="fas fa-bullseye text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Gelombang Radial</h3>
+                <p class="text-gray-600 mb-4">
+                  \( f(x,y) = \sin(\sqrt{x^2 + y^2}) \)
+                </p>
+                <button
+                  class="text-purple-600 font-medium group-hover:text-purple-700 transition"
+                >
+                  Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+            <div
+              class="function-card bg-white group"
+              onclick="plot3DFunction('x*y/2')"
+            >
+              <div class="p-6">
+                <div class="text-yellow-600 mb-3">
+                  <i class="fas fa-chart-area text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Bidang Miring</h3>
+                <p class="text-gray-600 mb-4">\( f(x,y) = \frac{xy}{2} \)</p>
+                <button
+                  class="text-yellow-600 font-medium group-hover:text-yellow-700 transition"
+                >
+                  Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+            <div
+              class="function-card bg-white group"
+              onclick="plot3DFunction('(x^2 - y^2)/10')"
+            >
+              <div class="p-6">
+                <div class="text-red-600 mb-3">
+                  <i class="fas fa-horse-head text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Pelana Kuda</h3>
+                <p class="text-gray-600 mb-4">
+                  \( f(x,y) = \frac{x^2 - y^2}{10} \)
+                </p>
+                <button
+                  class="text-red-600 font-medium group-hover:text-red-700 transition"
+                >
+                  Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+            <div
+              class="function-card bg-white group"
+              onclick="plot3DFunction('sqrt(x^2 + y^2)')"
+            >
+              <div class="p-6">
+                <div class="text-indigo-600 mb-3">
+                  <i class="fas fa-cone text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Kerucut</h3>
+                <p class="text-gray-600 mb-4">
+                  \( f(x,y) = \sqrt{x^2 + y^2} \)
+                </p>
+                <button
+                  class="text-indigo-600 font-medium group-hover:text-indigo-700 transition"
+                >
+                  Lihat Grafik <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Calculus Calculator Tab -->
+      <div id="calculus" class="tab-content">
+        <section class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6">🧠 E-Learning</h2>
+
+          <div
+            class="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-6 sm:pb-8 min-h-screen"
+          >
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+              <!-- Sidebar -->
+              <aside
+                class="lg:w-1/4 bg-white p-6 rounded-lg shadow-md overflow-y-auto lg:overflow-visible lg:sticky lg:top-4 mb-4 lg:mb-0"
+              >
+                <div x-data="{ active: null }">
+                  <h2
+                    class="text-xl font-bold mb-4 text-blue-700 border-b pb-2"
+                  >
+                    Table of Contents
+                  </h2>
+                  <ul class="space-y-2">
+                    <template
+                      x-for="(section, index) in [
+      { title: '1. Pendahuluan Kalkulus', id: 'Pendahuluan-Kalkulus', sub: [] },
+      {
+        title: '2. Limit dan Kekontinuan', id: 'Limit-dan-Kekontinuan', sub: [
+          { title: '2.1 Apa Itu Limit?', id: 'apa-itu-limit' },
+          { title: '2.2 Menghitung Limit Sederhana', id: 'menghitung-limit-sederhana' },
+          { title: '2.3 Konsep Kekontinuan', id: 'Konsep-Kekontinuan' }
+        ]
+      },
+      {
+        title: '3. Turunan (Derivatif)', id: 'Turunan', sub: [
+          { title: '3.1 Konsep Turunan', id: 'Konsep-Turunan' },
+          { title: '3.2 Aturan Turunan Pangkat', id: 'Aturan-Turunan-Pangkat' },
+          { title: '3.3 Turunan Fungsi Trigonometri', id: 'Turunan-Fungsi-Trigonometri' }
+        ]
+      },
+      {
+        title: '4. Integral', id: 'Integral', sub: [
+          { title: '4.1 Apa Itu Integral?', id: 'Apa-Itu-Integral' },
+          { title: '4.2 Integral Pangkat', id: 'Integral-Pangkat' },
+          { title: '4.3 Integral Fungsi Eksponensial', id: 'Integral-Fungsi-Eksponensial' }
+        ]
+      },
+      {
+        title: '5. Fungsi Khusus', id: 'Fungsi-Khusus', sub: [
+          { title: '5.1 Logaritma dan Sifatnya', id: 'Logaritma-dan-Sifatnya' },
+          { title: '5.2 Turunan dan Integral Logaritma', id: 'Turunan-dan-Integral-Logaritma' },
+          { title: '5.3 Eksponensial dan Penerapannya', id: 'Eksponensial-dan-Penerapannya' }
+        ]
+      },
+      {
+        title: '6. Fungsi Invers', id: 'Fungsi-Invers', sub: [
+          { title: '6.1 Apa Itu Fungsi Invers?', id: 'Apa-Itu-Fungsi-Invers' },
+          { title: '6.2 Cara Mencari Invers', id: 'Cara-Mencari-Invers' },
+          { title: '6.3 Turunan dari Fungsi Invers', id: 'Turunan-dari-Fungsi-Invers' }
+        ]
+      },
+      {
+        title: '7. Persamaan Garis dan Lingkaran', id: 'Persamaan-Garis-dan-Lingkaran', sub: [
+          { title: '7.1 Persamaan Garis Lurus', id: 'Persamaan-Garis-Lurus' },
+          { title: '7.2 Gradien dan Potongan Sumbu', id: 'Gradien' },
+          { title: '7.3 Persamaan Lingkaran', id: 'Persamaan-Lingkaran' }
+        ]
+      }
+    ]"
+                      :key="index"
+                    >
+                      <li>
+                        <button
+                          @click="active === index ? active = null : active = index"
+                          class="text-left w-full text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          <span x-text="section.title"></span>
+                        </button>
+                        <ul
+                          x-show="active === index"
+                          x-transition:enter="transition ease-out duration-300"
+                          x-transition:enter-start="opacity-0 transform -translate-y-2"
+                          x-transition:enter-end="opacity-100 transform translate-y-0"
+                          x-transition:leave="transition ease-in duration-200"
+                          x-transition:leave-start="opacity-100 transform translate-y-0"
+                          x-transition:leave-end="opacity-0 transform -translate-y-2"
+                          class="ml-6 mt-2 space-y-1 text-sm list-disc list-inside text-blue-500"
+                        >
+                          <template x-for="sub in section.sub" :key="sub.id">
+                            <li>
+                              <a
+                                :href="`#${sub.id}`"
+                                class="hover:text-blue-700"
+                                x-text="sub.title"
+                              ></a>
+                            </li>
+                          </template>
+                        </ul>
+                      </li>
+                    </template>
+                  </ul>
+
+                  <div class="mt-8">
+                    <h3 class="font-bold mb-2">Reading Progress</h3>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                      <div
+                        id="progress-bar"
+                        class="progress-bar bg-blue-600 h-2.5 rounded-full"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <p id="progress-text" class="text-sm text-gray-600">
+                      Page 1 of 6
+                    </p>
+                    <!-- <p id="reading-time" class="text-sm text-gray-600 mt-1">
+                      Estimated reading time: 5 minutes
+                    </p> -->
+                  </div>
+
+                  <div class="mt-6">
+                    <h3 class="font-bold mb-2">Display Options</h3>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                      <button
+                        id="font-decrease"
+                        class="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+                      >
+                        <i class="fas fa-font"></i> <i class="fas fa-minus"></i>
+                        <span class="hidden sm:inline">Decrease Text</span>
+                      </button>
+                      <button
+                        id="font-increase"
+                        class="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+                      >
+                        <i class="fas fa-font"></i> <i class="fas fa-plus"></i>
+                        <span class="hidden sm:inline">Increase Text</span>
+                      </button>
+                    </div>
+                    <button
+                      id="fullscreen-btn"
+                      class="p-2 w-full bg-gray-200 rounded-lg hover:bg-gray-300"
+                    >
+                      <i class="fas fa-expand"></i> Toggle Fullscreen
+                    </button>
+                  </div>
+                </div>
+              </aside>
+
+              <!-- E-Book Content -->
+              <main
+                class="lg:w-3/4 bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-md"
+              >
+                <article
+                  class="content-text"
+                  id="ebook-content"
+                  style="font-size: 1rem"
+                >
+                  <header class="mb-8 border-b pb-4">
+                    <h1 class="text-3xl font-bold text-blue-700 mb-2">
+                      1. Pendahuluan Kalkulus
+                    </h1>
+                    <p class="text-gray-600">
+                      Kalkulus adalah cabang dari matematika yang mempelajari
+                      perubahan. Ada dua topik utama dalam kalkulus: turunan
+                      (derivatif) dan integral. Turunan digunakan untuk memahami
+                      bagaimana sesuatu berubah secara lokal (misalnya
+                      kecepatan), sedangkan integral digunakan untuk menghitung
+                      total dari perubahan (misalnya jarak total).
+                    </p>
+                  </header>
+
+                  <header class="mb-8 border-b pb-4">
+                    <section
+                      id="apa-itu-limit"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h2 class="text-3xl font-bold text-blue-700 mb-2">
+                        2. Limit dan Kekontinuan
+                      </h2>
+                      <h3 class="font-semibold mb-4 text-blue-600">
+                        2.1 Apa Itu Limit?
+                      </h3>
+                      <p class="mb-4">
+                        Limit adalah nilai yang didekati oleh suatu fungsi saat
+                        variabel mendekati suatu nilai tertentu. Contoh:
+                      </p>
+                      <p class="bg-gray-100 p-4 rounded mb-4">
+                        \[ \lim_{x \to 2} (x^2 + 1) = 5 \]
+                      </p>
+                    </section>
+
+                    <section
+                      id="menghitung-limit-sederhana"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        2.2 Menghitung Limit Sederhana
+                      </h3>
+                      <p class="mb-4">
+                        Jika fungsinya kontinu, cukup substitusi nilai x:
+                      </p>
+                      <p class="bg-gray-100 p-4 rounded mb-4">
+                        \[ \lim_{x \to 3} (2x + 1) = 7 \]
+                      </p>
+                    </section>
+
+                    <section
+                      id="Konsep-Kekontinuan"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        2.3 Konsep Kekontinuan
+                      </h3>
+                      <p class="mb-4">
+                        Fungsi dikatakan kontinu di titik x = c jika:
+                      </p>
+                      <ol class="list-decimal ml-8 mb-4 space-y-2">
+                        <li>\( \lim_{x \to c} f(x) \) ada</li>
+                        <li>\( f(c) \) terdefinisi</li>
+                        <li>\( \lim_{x \to c} f(x) = f(c) \)</li>
+                      </ol>
+                    </section>
+                  </header>
+
+                  <header class="mb-8 border-b pb-4">
+                    <section
+                      id="Konsep-Turunan"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h2 class="text-3xl font-bold text-blue-700 mb-2">
+                        3. Turunan (Derivatif)
+                      </h2>
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        3.1 Konsep Turunan
+                      </h3>
+                      <p class="mb-4">
+                        Turunan menunjukkan laju perubahan suatu fungsi terhadap
+                        variabelnya. Secara geometris, ini adalah kemiringan
+                        garis singgung.
+                      </p>
+                    </section>
+
+                    <section
+                      id="Aturan-Turunan-Pangkat"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        3.2 Aturan Turunan Pangkat
+                      </h3>
+                      <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <li class="bg-gray-100 p-3 rounded">
+                          <strong>Jika </strong> \( f(x) = ax^{n} \)
+                        </li>
+                        <li class="bg-gray-100 p-3 rounded">
+                          <strong>maka: </strong> \( f'(x) = anx^{n-1} \)
+                        </li>
+                        <li class="bg-gray-100 p-3 rounded">
+                          <strong>Contoh:</strong> \( f(x) = 3x^{2} \Rightarrow
+                          f'(x) = 6x \)
+                        </li>
+                      </ul>
+                    </section>
+
+                    <section
+                      id="Turunan-Fungsi-Trigonometri"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        3.3 Turunan Fungsi Trigonometri
+                      </h3>
+                      <p class="bg-gray-100 p-4 rounded mb-4">
+                        <strong>Contoh:</strong> \( f(x) = a \sin(bx)
+                        \Rightarrow f'(x) = ab \cos(bx) \)
+                      </p>
+                    </section>
+                  </header>
+
+                  <header class="mb-8 border-b pb-4">
+                    <section
+                      id="Apa-Itu-Integral"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h2 class="text-3xl font-bold text-blue-700 mb-2">
+                        4. Integral
+                      </h2>
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        4.1 Apa Itu Integral?
+                      </h3>
+                      <p class="mb-4">
+                        Integral adalah kebalikan dari turunan, digunakan untuk
+                        menghitung luas, volume, dan total perubahan.
+                      </p>
+                    </section>
+
+                    <section
+                      id="Integral-Pangkat"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        4.2 Integral Pangkat
+                      </h3>
+                      <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <li class="bg-gray-100 p-3 rounded">
+                          \( \int ax^n dx = \frac{a}{n+1} x^{n+1} + C \)
+                        </li>
+                        <li class="bg-gray-100 p-3 rounded">
+                          <strong>Contoh: </strong> \( \int 4x^2 dx =
+                          \frac{4}{3} x^3 + C \)
+                        </li>
+                      </ul>
+                    </section>
+
+                    <section
+                      id="Integral-Fungsi-Eksponensial"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        4.3 Integral Fungsi Eksponensial
+                      </h3>
+                      <p class="bg-gray-100 p-4 rounded mb-4">
+                        \( \int ae^{bx} dx = \frac{a}{b}e^{bx} + C \)
+                      </p>
+                    </section>
+                  </header>
+
+                  <header class="mb-8 border-b pb-4">
+                    <section
+                      id="Logaritma-dan-Sifatnya"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h2 class="text-3xl font-bold text-blue-700 mb-2">
+                        5. Fungsi Khusus
+                      </h2>
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        5.1 Logaritma
+                      </h3>
+                      <p class="mb-4">
+                        \( \log_{e} = ln(x) \) Logaritma adalah kebalikan dari
+                        fungsi eksponensial.
+                      </p>
+                    </section>
+
+                    <section
+                      id="Turunan-dan-Integral-Logaritma"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        5.2 Turunan dan Integral Logaritma
+                      </h3>
+                      <p class="bg-gray-100 p-4 rounded mb-4">
+                        \( \frac{d}{dx} ln(x) = \frac{1}{2} \ \ \ \ \ \ \ \ \
+                        \int \frac{1}{x} dx = ln |x| + C \)
+                      </p>
+                    </section>
+
+                    <section
+                      id="Eksponensial-dan-Penerapannya"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        5.3 Eksponensial dan Penerapannya
+                      </h3>
+                      <p class="mb-4">
+                        \( e^x \) adalah fungsi eksponensial alami. \(
+                        \frac{d}{dx} e^x = e^x \ \ \ \ \ \ \ \ \int e^x dx = e^x
+                        + C \)
+                      </p>
+                    </section>
+                  </header>
+
+                  <header class="mb-8 border-b pb-4">
+                    <section
+                      id="Apa-Itu-Fungsi-Invers"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h2 class="text-3xl font-bold text-blue-700 mb-2">
+                        6. Fungsi Invers
+                      </h2>
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        6.1 Apa Itu Fungsi Invers?
+                      </h3>
+                      <p class="mb-4">
+                        Fungsi yang membalikkan hasil fungsi asli. jika \( f(x)
+                        = y \) maka \( f^{-1}(y) = x \)
+                      </p>
+                    </section>
+
+                    <section
+                      id="Cara-Mencari-Invers"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        6.2 Cara Mencari Invers
+                      </h3>
+                      <ol class="list-decimal ml-8 mb-4 space-y-2">
+                        <li>Ganti \( f(x) \) dengan \( y \)</li>
+                        <li>Tukar \( x \) dan \( y \)</li>
+                        <li>Selesaikan y dari persamaan baru</li>
+                      </ol>
+                    </section>
+
+                    <section
+                      id="Turunan-dari-Fungsi-Invers"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        6.3 Turunan dari Invers
+                      </h3>
+                      <p class="bg-gray-100 p-4 rounded mb-4">
+                        <strong>Gunakan:</strong> \( (f^{-1})'(x) =
+                        \frac{1}{f'(f{-1}(x))} \)
+                      </p>
+                    </section>
+                  </header>
+
+                  <header class="mb-8 border-b pb-4">
+                    <section
+                      id="Persamaan-Garis-Lurus"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h2 class="text-3xl font-bold text-blue-700 mb-2">
+                        7. Persamaan Garis dan Lingkaran
+                      </h2>
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        7.1 Persamaan Garis Lurus
+                      </h3>
+                      <p class="mb-4">
+                        \( y = mx + c \ m : \) gradien, \( c: \) titik potong
+                        dengan sumbu y
+                      </p>
+                    </section>
+
+                    <section
+                      id="Gradien"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        7.2 Gradien dan Potongan Sumbu
+                      </h3>
+                      <ol class="list-decimal ml-8 mb-4 space-y-2">
+                        <li>Gradien: \( m = \frac{y2-y1}{x2-x1} \)</li>
+                        <li>Potongan y: nilai y saat \( x = 0 \)</li>
+                      </ol>
+                    </section>
+
+                    <section
+                      id="Persamaan-Lingkaran"
+                      class="mb-12 section-content"
+                      data-reading-time="5"
+                      data-level="1"
+                    >
+                      <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        7.3 Persamaan Lingkaran
+                      </h3>
+                      <p class="mb-4">
+                        \( (x - a)^{2} + (y - b)^{2} = r^{2} \) Pusat: (a,b),
+                        jari-jari \( \pi \)
+                      </p>
+                    </section>
+                  </header>
+                  <!-- <section
+                    id="derivatives"
+                    class="mb-12 section-content"
+                    data-reading-time="7"
+                    data-level="2"
+                  >
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-600">
+                      2. Derivatives
+                    </h2>
+                    <p class="mb-4">
+                      The derivative represents the rate of change of a
+                      function. It's defined as:
+                    </p>
+                    <p class="bg-gray-100 p-4 rounded mb-4">
+                      \[ f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h} \]
+                    </p>
+                    <p class="mb-4">
+                      This limit, if it exists, gives the slope of the tangent
+                      line to the function at point \( x \).
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Basic Differentiation Rules
+                    </h3>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Power Rule:</strong> \( \frac{d}{dx} x^n =
+                        nx^{n-1} \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Sum Rule:</strong> \( \frac{d}{dx} [f(x) + g(x)]
+                        = f'(x) + g'(x) \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Product Rule:</strong> \( \frac{d}{dx}
+                        [f(x)g(x)] = f'(x)g(x) + f(x)g'(x) \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Quotient Rule:</strong> \( \frac{d}{dx}
+                        \left[\frac{f(x)}{g(x)}\right] = \frac{f'(x)g(x) -
+                        f(x)g'(x)}{g(x)^2} \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Chain Rule:</strong> \( \frac{d}{dx} f(g(x)) =
+                        f'(g(x)) \cdot g'(x) \)
+                      </li>
+                    </ul>
+
+                    <div
+                      class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4"
+                    >
+                      <h4 class="font-semibold text-blue-700 mb-2">Example</h4>
+                      <p>Find the derivative of \( f(x) = 3x^2 + 5x - 7 \)</p>
+                      <p class="mt-2 font-semibold">Solution:</p>
+                      <p>Using the power rule:</p>
+                      <p>
+                        \( f'(x) = 3 \cdot 2x^{2-1} + 5 \cdot 1x^{1-1} - 0 = 6x
+                        + 5 \)
+                      </p>
+                    </div>
+                  </section>
+
+                  <section
+                    id="applications"
+                    class="mb-12 section-content"
+                    data-reading-time="8"
+                    data-level="3"
+                  >
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-600">
+                      3. Applications of Derivatives
+                    </h2>
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Related Rates
+                    </h3>
+                    <p class="mb-4">
+                      Related rates problems involve finding a rate by relating
+                      other rates and quantities.
+                    </p>
+
+                    <div
+                      class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4"
+                    >
+                      <h4 class="font-semibold text-blue-700 mb-2">
+                        Example: Expanding Circle
+                      </h4>
+                      <p>
+                        The radius of a circle is increasing at 2 cm/s. At what
+                        rate is the area increasing when r = 6 cm?
+                      </p>
+                      <p class="mt-2 font-semibold">Solution:</p>
+                      <p>\( A = \pi r^2 \)</p>
+                      <p>Differentiate with respect to time \( t \):</p>
+                      <p>\( \frac{dA}{dt} = 2\pi r \frac{dr}{dt} \)</p>
+                      <p>
+                        Given \( \frac{dr}{dt} = 2 \) cm/s and \( r = 6 \) cm:
+                      </p>
+                      <p>\( \frac{dA}{dt} = 2\pi (6)(2) = 24\pi \) cm²/s</p>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Optimization
+                    </h3>
+                    <p class="mb-4">
+                      Finding maximum and minimum values of functions using
+                      derivatives.
+                    </p>
+
+                    <div
+                      class="bg-blue-50 p-4 rounded-lg border border-blue-200"
+                    >
+                      <h4 class="font-semibold text-blue-700 mb-2">
+                        Example: Maximizing Area
+                      </h4>
+                      <p>
+                        Find the dimensions of a rectangle with perimeter 100 m
+                        that has maximum area.
+                      </p>
+                      <p class="mt-2 font-semibold">Solution:</p>
+                      <p>Let length = \( x \), width = \( y \)</p>
+                      <p>Perimeter: \( 2x + 2y = 100 \) ⇒ \( y = 50 - x \)</p>
+                      <p>Area: \( A = xy = x(50 - x) = 50x - x^2 \)</p>
+                      <p>
+                        Find critical point: \( A' = 50 - 2x = 0 \) ⇒ \( x = 25
+                        \)
+                      </p>
+                      <p>Thus \( y = 25 \), forming a square of side 25 m.</p>
+                    </div>
+                  </section>
+
+                  <section
+                    id="integrals"
+                    class="mb-12 section-content"
+                    data-reading-time="8"
+                    data-level="4"
+                  >
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-600">
+                      4. Integrals
+                    </h2>
+                    <p class="mb-4">
+                      Integration is essentially the reverse process of
+                      differentiation. The indefinite integral is:
+                    </p>
+                    <p class="bg-gray-100 p-4 rounded mb-4">
+                      \[ \int f(x) dx = F(x) + C \]
+                    </p>
+                    <p class="mb-4">
+                      where \( F'(x) = f(x) \) (F is the antiderivative) and C
+                      is the constant of integration.
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Basic Integration Rules
+                    </h3>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Power Rule:</strong> \( \int x^n dx =
+                        \frac{x^{n+1}}{n+1} + C \) (n ≠ -1)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Sum Rule:</strong> \( \int [f(x) + g(x)] dx =
+                        \int f(x)dx + \int g(x)dx \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Constant Multiple:</strong> \( \int k f(x) dx =
+                        k \int f(x) dx \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Natural Log:</strong> \( \int \frac{1}{x} dx =
+                        \ln|x| + C \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Exponential:</strong> \( \int e^x dx = e^x + C
+                        \)
+                      </li>
+                    </ul>
+
+                    <div
+                      class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4"
+                    >
+                      <h4 class="font-semibold text-blue-700 mb-2">Example</h4>
+                      <p>Evaluate \( \int (3x^2 - 5x + 2) dx \)</p>
+                      <p class="mt-2 font-semibold">Solution:</p>
+                      <p>Using the power rule:</p>
+                      <p>
+                        \( \int 3x^2 dx - \int 5x dx + \int 2 dx = x^3 -
+                        \frac{5}{2}x^2 + 2x + C \)
+                      </p>
+                    </div>
+                  </section>
+
+                  <section
+                    id="applications-integral"
+                    class="mb-12 section-content"
+                    data-reading-time="10"
+                    data-level="5"
+                  >
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-600">
+                      5. Applications of Integrals
+                    </h2>
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Area Under a Curve
+                    </h3>
+                    <p class="mb-4">
+                      The definite integral \( \int_a^b f(x) dx \) represents
+                      the signed area between \( f(x) \) and the x-axis from \(
+                      x = a \) to \( x = b \).
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Fundamental Theorem of Calculus
+                    </h3>
+                    <p class="mb-4">
+                      Part 1: If \( F(x) = \int_a^x f(t) dt \), then \( F'(x) =
+                      f(x) \)
+                    </p>
+                    <p>
+                      Part 2: \( \int_a^b f(x) dx = F(b) - F(a) \), where \(
+                      F'(x) = f(x) \)
+                    </p>
+
+                    <div
+                      class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4 mt-6"
+                    >
+                      <h4 class="font-semibold text-blue-700 mb-2">
+                        Example: Area Calculation
+                      </h4>
+                      <p>
+                        Find the area under \( f(x) = x^2 \) between \( x = 0 \)
+                        and \( x = 2 \).
+                      </p>
+                      <p class="mt-2 font-semibold">Solution:</p>
+                      <p>
+                        \( A = \int_0^2 x^2 dx = \left[\frac{x^3}{3}\right]_0^2
+                        = \frac{8}{3} - 0 = \frac{8}{3} \)
+                      </p>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Volume of Revolution
+                    </h3>
+                    <p class="mb-4">
+                      Using the disk method, the volume generated by rotating
+                      around the x-axis is:
+                    </p>
+                    <p class="bg-gray-100 p-4 rounded mb-4">
+                      \[ V = \pi \int_a^b [f(x)]^2 dx \]
+                    </p>
+
+                    <div
+                      class="bg-blue-50 p-4 rounded-lg border border-blue-200"
+                    >
+                      <h4 class="font-semibold text-blue-700 mb-2">Example</h4>
+                      <p>
+                        Find the volume generated by rotating \( y = \sqrt{x} \)
+                        about the x-axis from \( x = 0 \) to \( x = 4 \).
+                      </p>
+                      <p class="mt-2 font-semibold">Solution:</p>
+                      <p>
+                        \( V = \pi \int_0^4 (\sqrt{x})^2 dx = \pi \int_0^4 x dx
+                        = \pi \left[\frac{x^2}{2}\right]_0^4 = \pi (8 - 0) =
+                        8\pi \)
+                      </p>
+                    </div>
+                  </section>
+
+                  <section
+                    id="series"
+                    class="mb-12 section-content"
+                    data-reading-time="12"
+                    data-level="6"
+                  >
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-600">
+                      6. Series
+                    </h2>
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Taylor Series
+                    </h3>
+                    <p class="mb-4">
+                      The Taylor series expansion of a function about a point \(
+                      a \):
+                    </p>
+                    <p class="bg-gray-100 p-4 rounded mb-4">
+                      \[ f(x) = \sum_{n=0}^\infty \frac{f^{(n)}(a)}{n!} (x-a)^n
+                      \]
+                    </p>
+                    <p class="mb-4">
+                      When \( a = 0 \), this is called the Maclaurin series.
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-3 mt-6 text-blue-550">
+                      Common Series
+                    </h3>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Exponential:</strong> \( e^x = \sum_{n=0}^\infty
+                        \frac{x^n}{n!} \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Sine:</strong> \( \sin(x) = \sum_{n=0}^\infty
+                        \frac{(-1)^n x^{2n+1}}{(2n+1)!} \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Cosine:</strong> \( \cos(x) = \sum_{n=0}^\infty
+                        \frac{(-1)^n x^{2n}}{(2n)!} \)
+                      </li>
+                      <li class="bg-gray-100 p-3 rounded">
+                        <strong>Geometric:</strong> \( \frac{1}{1-x} =
+                        \sum_{n=0}^\infty x^n \) (for \( |x| < 1 \))
+                      </li>
+                    </ul>
+
+                    <div
+                      class="bg-blue-50 p-4 rounded-lg border border-blue-200"
+                    >
+                      <h4 class="font-semibold text-blue-700 mb-2">
+                        Example: Maclaurin Series
+                      </h4>
+                      <p>
+                        Find the first four non-zero terms of the Maclaurin
+                        series for \( f(x) = e^{-x} \).
+                      </p>
+                      <p class="mt-2 font-semibold">Solution:</p>
+                      <p>
+                        Maclaurin series means \( a = 0 \). Compute derivatives:
+                      </p>
+                      <p>\( f(0) = e^0 = 1 \)</p>
+                      <p>\( f'(x) = -e^{-x} \) ⇒ \( f'(0) = -1 \)</p>
+                      <p>\( f''(x) = e^{-x} \) ⇒ \( f''(0) = 1 \)</p>
+                      <p>\( f'''(x) = -e^{-x} \) ⇒ \( f'''(0) = -1 \)</p>
+                      <p>
+                        Thus: \( e^{-x} \approx 1 - x + \frac{x^2}{2} -
+                        \frac{x^3}{6} \)
+                      </p>
+                    </div>
+                  </section> -->
+                </article>
+              </main>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Simple Calculator Tab -->
+      <div id="calculator" class="tab-content">
+        <section class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6">
+            🧮 Kalkulator kalkulus
+          </h2>
+
+          <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div class="mb-4">
+              <label
+                for="rumus"
+                class="block text-sm font-medium text-gray-700 mb-2"
+                >Pilih Rumus:</label
+              >
+              <select
+                id="rumus"
+                onchange="tampilkanForm()"
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              >
+                <option value="">-- Pilih Rumus --</option>
+                <option value="turunan_pangkat">
+                  Turunan Pangkat: f(x) = axⁿ
+                </option>
+                <option value="turunan_trigonometri">
+                  Turunan Trigonometri: f(x) = a sin(bx)
+                </option>
+                <option value="integral_pangkat">
+                  Integral Pangkat: ∫ axⁿ dx
+                </option>
+                <option value="integral_eksponen">
+                  Integral Eksponensial: ∫ aeᵇˣ dx
+                </option>
+                <option value="limit">Limit: limₓ→c f(x)</option>
+                <option value="logaritma">Logaritma: logₑ(x)</option>
+                <option value="fungsi_invers">Invers Fungsi: f⁻¹(x)</option>
+                <option value="garis_lurus">
+                  Persamaan Garis Lurus: y = mx + c
+                </option>
+                <option value="lingkaran">
+                  Persamaan Lingkaran: (x - a)² + (y - b)² = r²
+                </option>
+              </select>
+            </div>
+
+            <div
+              id="formInput"
+              class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"
+            ></div>
+
+            <div class="flex flex-wrap gap-3">
+              <button
+                onclick="hitung()"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center"
+              >
+                <i class="fas fa-calculator mr-2"></i> Hitung
+              </button>
+              <button
+                onclick="resetForm()"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition flex items-center"
+              >
+                <i class="fas fa-redo mr-2"></i> Reset
+              </button>
+              <button
+                onclick="salinKeClipboard()"
+                id="salinBtn"
+                disabled
+                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center"
+              >
+                <i class="fas fa-copy mr-2"></i> Salin Soal
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="output"
+            class="bg-white rounded-xl shadow-md p-6 mb-6 min-h-32"
+          ></div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-md p-6">
+              <h3 class="text-lg font-semibold mb-4">Grafik 2D</h3>
+              <canvas
+                id="grafik"
+                width="400"
+                height="300"
+                class="w-full"
+              ></canvas>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6">
+              <h3 class="text-lg font-semibold mb-4">📚 Arsip Soal</h3>
+              <ul
+                id="daftarArsip"
+                class="space-y-2 max-h-64 overflow-y-auto"
+              ></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- About Tab -->
+      <div id="about" class="tab-content">
+        <section class="mb-8">
+          <div
+            class="bg-white rounded-xl shadow-md overflow-hidden max-w-4xl mx-auto"
+          >
+            <div class="p-8">
+              <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                Tentang MathLab
+              </h2>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-700 mb-3">
+                  🎯 Tujuan
+                </h3>
+                <p class="text-gray-600 mb-4">
+                  MathLab dibuat untuk membantu siswa dan mahasiswa memahami
+                  konsep-konsep matematika dan kalkulus melalui visualisasi
+                  interaktif dan alat perhitungan yang mudah digunakan.
+                </p>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-700 mb-3">
+                  ✨ Fitur
+                </h3>
+                <ul class="list-disc pl-5 text-gray-600 space-y-2">
+                  <li>
+                    Kalkulator kalkulus untuk turunan, integral, limit, dan
+                    lainnya
+                  </li>
+                  <li>Visualisasi grafik 2D dan 3D</li>
+                  <li>Pustaka rumus kalkulus</li>
+                  <li>Antarmuka yang responsif dan mudah digunakan</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 px-8 py-6 border-t border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                ✉️ Kontak
+              </h3>
+              <p class="text-gray-600">
+                Untuk pertanyaan atau masukan, silakan hubungi kami di
+                <a
+                  href="mailto:f2406103501044@student.uby.ac.id"
+                  class="text-blue-600 hover:underline"
+                  >f2406103501044@student.uby.ac.id</a
+                >
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      // Tab Navigation
+      function showTab(tabId) {
+        // Hide all tabs
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // Show selected tab
+        document.getElementById(tabId).classList.add("active");
+
+        // Update active nav link
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.classList.remove("active-nav");
+        });
+
+        // Find the clicked link and make it active
+        const links = document.querySelectorAll(".nav-link");
+        for (let link of links) {
+          if (link.getAttribute("onclick").includes(tabId)) {
+            link.classList.add("active-nav");
+            break;
+          }
+        }
+
+        // If showing 3D tab, initialize the 3D graph
+        if (tabId === "home") {
+          init3DGraph();
+        }
+      }
+
+      // Scroll to features
+      function scrollToFeatures() {
+        document.getElementById("features").scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+
+      // Calculus Calculator Functions
+      let chart;
+      let soalLatex = "";
+      const arsip = [];
+
+      function tampilkanForm() {
+        document.getElementById("output").innerHTML = "";
+        if (chart) chart.destroy();
+        document
+          .getElementById("grafik")
+          .getContext("2d")
+          .clearRect(0, 0, 400, 300);
+
+        const rumus = document.getElementById("rumus").value;
+        let html = "";
+
+        switch (rumus) {
+          case "turunan_pangkat":
+          case "integral_pangkat":
+            html += `
+                        <div>
+                            <label for="a" class="block text-sm font-medium text-gray-700">a:</label>
+                            <input id="a" type="number" value="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="n" class="block text-sm font-medium text-gray-700">n:</label>
+                            <input id="n" type="number" value="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    `;
+            break;
+          case "turunan_trigonometri":
+          case "integral_eksponen":
+            html += `
+                        <div>
+                            <label for="a" class="block text-sm font-medium text-gray-700">a:</label>
+                            <input id="a" type="number" value="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="b" class="block text-sm font-medium text-gray-700">b:</label>
+                            <input id="b" type="number" value="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    `;
+            break;
+          case "limit":
+            html += `
+                        <div>
+                            <label for="fx" class="block text-sm font-medium text-gray-700">Fungsi f(x):</label>
+                            <input id="fx" value="x^2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="c" class="block text-sm font-medium text-gray-700">Nilai x → c:</label>
+                            <input id="c" type="number" value="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    `;
+            break;
+          case "logaritma":
+            html += `
+                        <div>
+                            <label for="b" class="block text-sm font-medium text-gray-700">Basis (b):</label>
+                            <input id="b" type="number" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="x" class="block text-sm font-medium text-gray-700">Nilai x:</label>
+                            <input id="x" type="number" value="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    `;
+            break;
+          case "fungsi_invers":
+            html += `
+                        <div class="md:col-span-2">
+                            <label for="fx" class="block text-sm font-medium text-gray-700">Fungsi f(x):</label>
+                            <input id="fx" value="2*x + 3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    `;
+            break;
+          case "garis_lurus":
+            html += `
+                        <div>
+                            <label for="m" class="block text-sm font-medium text-gray-700">Gradien (m):</label>
+                            <input id="m" type="number" value="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="c" class="block text-sm font-medium text-gray-700">Konstanta (c):</label>
+                            <input id="c" type="number" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    `;
+            break;
+          case "lingkaran":
+            html += `
+                        <div>
+                            <label for="a" class="block text-sm font-medium text-gray-700">Pusat (a):</label>
+                            <input id="a" type="number" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="b" class="block text-sm font-medium text-gray-700">Pusat (b):</label>
+                            <input id="b" type="number" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="r" class="block text-sm font-medium text-gray-700">Jari-jari (r):</label>
+                            <input id="r" type="number" value="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    `;
+            break;
+        }
+
+        document.getElementById("formInput").innerHTML = html;
+      }
+
+      function hitung() {
+        const rumus = document.getElementById("rumus").value;
+        if (!rumus) {
+          alert("Pilih rumus terlebih dahulu!");
+          return;
+        }
+
+        const a = parseFloat(document.getElementById("a")?.value || 1);
+        const n = parseFloat(document.getElementById("n")?.value || 1);
+        const b = parseFloat(document.getElementById("b")?.value || 1);
+        const x = parseFloat(document.getElementById("x")?.value || 1);
+        const m = parseFloat(document.getElementById("m")?.value || 1);
+        const c = parseFloat(document.getElementById("c")?.value || 0);
+        const r = parseFloat(document.getElementById("r")?.value || 1);
+        const fx = document.getElementById("fx")?.value || "x";
+
+        let soal = "",
+          hasil = "",
+          error = null;
+        const xData = [],
+          yData = [];
+
+        try {
+          switch (rumus) {
+            case "turunan_pangkat":
+              soal = `f(x) = ${a}x^{${n}}`;
+              hasil = `f'(x) = ${a * n}x^{${n - 1}}`;
+              for (let i = -10; i <= 10; i += 0.5) {
+                xData.push(i);
+                yData.push(a * Math.pow(i, n));
+              }
+              break;
+
+            case "integral_pangkat":
+              soal = `\\int ${a}x^{${n}} \\, dx`;
+              if (n === -1) {
+                hasil = `${a} \\ln|x| + C`;
+              } else {
+                hasil = `\\frac{${a}}{${n + 1}}x^{${n + 1}} + C`;
+              }
+              for (let i = 0.1; i <= 10; i += 0.5) {
+                xData.push(i);
+                yData.push(a * Math.pow(i, n));
+              }
+              break;
+
+            case "turunan_trigonometri":
+              soal = `f(x) = ${a}\\sin(${b}x)`;
+              hasil = `f'(x) = ${a * b}\\cos(${b}x)`;
+              for (let i = -10; i <= 10; i += 0.2) {
+                xData.push(i);
+                yData.push(a * Math.sin(b * i));
+              }
+              break;
+
+            case "integral_eksponen":
+              soal = `\\int ${a}e^{${b}x} \\, dx`;
+              hasil = `\\frac{${a}}{${b}}e^{${b}x} + C`;
+              for (let i = -5; i <= 5; i += 0.2) {
+                xData.push(i);
+                yData.push(a * Math.exp(b * i));
+              }
+              break;
+
+            case "limit":
+              soal = `\\lim_{x \\to ${c}} ${fx}`;
+              hasil = math.evaluate(fx.replace(/x/g, c));
+              break;
+
+            case "logaritma":
+              soal = `\\log_{${b}}(${x})`;
+              hasil = math.log(x, b);
+              for (let i = 1; i <= 100; i += 5) {
+                xData.push(i);
+                yData.push(math.log(i, b));
+              }
+              break;
+
+            case "fungsi_invers":
+              soal = `f(x) = ${fx}`;
+              hasil = "f⁻¹(x) = (Diperlukan penyelesaian manual)";
+              for (let i = -10; i <= 10; i += 1) {
+                xData.push(i);
+                yData.push(math.evaluate(fx.replace(/x/g, i)));
+              }
+              break;
+
+            case "garis_lurus":
+              soal = `y = ${m}x + ${c}`;
+              hasil = `Gradien = ${m}, Perpotongan sumbu-y = ${c}`;
+              for (let i = -10; i <= 10; i += 1) {
+                xData.push(i);
+                yData.push(m * i + c);
+              }
+              break;
+
+            case "lingkaran":
+              soal = `(x - ${a})² + (y - ${b})² = ${r}²`;
+              hasil = `Pusat: (${a}, ${b}), Jari-jari: ${r}`;
+              // Gambar lingkaran dengan persamaan parametrik
+              for (let theta = 0; theta < 2 * Math.PI; theta += 0.1) {
+                xData.push(a + r * Math.cos(theta));
+                yData.push(b + r * Math.sin(theta));
+              }
+              break;
+          }
+        } catch (e) {
+          error = `Error: ${e.message}`;
+        }
+
+        soalLatex = soal;
+        arsip.push(soal);
+        tampilkanArsip();
+
+        const outputDiv = document.getElementById("output");
+        if (error) {
+          outputDiv.innerHTML = `<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4">${error}</div>`;
+        } else {
+          outputDiv.innerHTML = `
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                        <strong class="block text-sm font-medium text-gray-700 mb-1">Soal:</strong>
+                        <div class="text-lg">\\(${soal}\\)</div>
+                        <strong class="block text-sm font-medium text-gray-700 mt-3 mb-1">Hasil:</strong>
+                        <div class="text-lg">\\(${hasil}\\)</div>
+                    </div>
+                `;
+        }
+
+        document.getElementById("salinBtn").disabled = !soalLatex;
+        MathJax.typesetPromise();
+
+        const ctx = document.getElementById("grafik").getContext("2d");
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: rumus === "lingkaran" ? "scatter" : "line",
+          data: {
+            datasets: [
+              {
+                label: soal,
+                data: xData.map((x, i) => ({ x: x, y: yData[i] })),
+                borderColor: "rgb(59, 130, 246)",
+                backgroundColor:
+                  rumus === "lingkaran"
+                    ? "rgba(59, 130, 246, 0.5)"
+                    : "rgba(59, 130, 246, 0.5)",
+                fill: false,
+                tension: 0.3,
+                showLine: rumus !== "lingkaran", // scatter pakai showLine: false
+                pointRadius: rumus === "lingkaran" ? 2 : 0,
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+            scales: {
+              x: {
+                type: "linear",
+                position: "bottom",
+                title: {
+                  display: true,
+                  text: "x",
+                },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "y",
+                },
+              },
+            },
+          },
+        });
+      }
+
+      function tampilkanArsip() {
+        const daftar = document.getElementById("daftarArsip");
+        daftar.innerHTML = "";
+        arsip
+          .slice()
+          .reverse()
+          .forEach((soal) => {
+            const item = document.createElement("li");
+            item.className = "bg-gray-50 p-3 rounded-lg";
+            item.innerHTML = `\\(${soal}\\)`;
+            daftar.appendChild(item);
+          });
+        MathJax.typesetPromise();
+      }
+
+      function resetForm() {
+        document.getElementById("rumus").value = "";
+        document.getElementById("formInput").innerHTML = "";
+        document.getElementById("output").innerHTML = "";
+        document.getElementById("salinBtn").disabled = true;
+        soalLatex = "";
+        if (chart) chart.destroy();
+        document
+          .getElementById("grafik")
+          .getContext("2d")
+          .clearRect(0, 0, 400, 300);
+      }
+
+      function salinKeClipboard() {
+        if (!soalLatex) return;
+        navigator.clipboard.writeText(soalLatex).then(
+          () => {
+            const btn = document.getElementById("salinBtn");
+            btn.innerHTML = '<i class="fas fa-check mr-2"></i> Tersalin!';
+            btn.classList.remove("bg-green-600", "hover:bg-green-700");
+            btn.classList.add("bg-green-500", "hover:bg-green-600");
+            setTimeout(() => {
+              btn.innerHTML = '<i class="fas fa-copy mr-2"></i> Salin Soal';
+              btn.classList.remove("bg-green-500", "hover:bg-green-600");
+              btn.classList.add("bg-green-600", "hover:bg-green-700");
+            }, 2000);
+          },
+          () => alert("Gagal menyalin.")
+        );
+      }
+
+      // Simple Calculator Functions
+      let calcDisplay = document.getElementById("calcDisplay");
+      let currentInput = "0";
+      let previousInput = "";
+      let operation = null;
+      let resetScreen = false;
+
+      function calcNumber(number) {
+        if (currentInput === "0" || resetScreen) {
+          currentInput = number;
+          resetScreen = false;
+        } else {
+          currentInput += number;
+        }
+        updateDisplay();
+      }
+
+      function calcDecimal() {
+        if (resetScreen) {
+          currentInput = "0.";
+          resetScreen = false;
+          return;
+        }
+        if (currentInput.indexOf(".") === -1) {
+          currentInput += ".";
+        }
+        updateDisplay();
+      }
+
+      function calcOperator(op) {
+        if (operation !== null) calcEquals();
+        previousInput = currentInput;
+        operation = op;
+        resetScreen = true;
+      }
+
+      function calcEquals() {
+        if (operation === null || resetScreen) return;
+        let computation;
+        const prev = parseFloat(previousInput);
+        const current = parseFloat(currentInput);
+
+        switch (operation) {
+          case "+":
+            computation = prev + current;
+            break;
+          case "-":
+            computation = prev - current;
+            break;
+          case "*":
+            computation = prev * current;
+            break;
+          case "/":
+            computation = prev / current;
+            break;
+          default:
+            return;
+        }
+
+        currentInput = computation.toString();
+        operation = null;
+        resetScreen = true;
+        updateDisplay();
+      }
+
+      function calcPercent() {
+        currentInput = (parseFloat(currentInput) / 100).toString();
+        updateDisplay();
+      }
+
+      function calcClear() {
+        currentInput = "0";
+        previousInput = "";
+        operation = null;
+        updateDisplay();
+      }
+
+      function calcBackspace() {
+        if (
+          currentInput.length === 1 ||
+          (currentInput.length === 2 && currentInput.startsWith("-"))
+        ) {
+          currentInput = "0";
+        } else {
+          currentInput = currentInput.slice(0, -1);
+        }
+        updateDisplay();
+      }
+
+      function updateDisplay() {
+        calcDisplay.value = currentInput;
+      }
+
+      // 3D Graph Functions
+      let scene, camera, renderer, controls;
+      let graphMesh;
+
+      function init3DGraph() {
+        const container = document.getElementById("graph3d");
+
+        // Clear previous renderer if exists
+        if (renderer) {
+          container.innerHTML = "";
+        }
+
+        // Create scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf8fafc);
+
+        // Create camera
+        camera = new THREE.PerspectiveCamera(
+          75,
+          container.clientWidth / container.clientHeight,
+          0.1,
+          1000
+        );
+        camera.position.set(4, 4, 4);
+
+        // Create renderer
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Add orbit controls
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // Add axes helper
+        const axesHelper = new THREE.AxesHelper(5);
+        scene.add(axesHelper);
+
+        // Add grid helper
+        const gridHelper = new THREE.GridHelper(10, 10, 0x888888, 0xcccccc);
+        scene.add(gridHelper);
+
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+
+        // Initial plot
+        plot3DFunction("x^2 + y^2");
+
+        // Handle window resize
+        window.addEventListener("resize", onWindowResize);
+
+        // Start animation loop
+        animate();
+      }
+
+      function plot3DFunction(expression) {
+        // Remove previous graph if exists
+        if (graphMesh) {
+          scene.remove(graphMesh);
+        }
+
+        const size = 5;
+        const divisions = 50;
+
+        // Create geometry
+        const geometry = new THREE.ParametricBufferGeometry(
+          (u, v, target) => {
+            const x = (u - 0.5) * size * 2;
+            const y = (v - 0.5) * size * 2;
+            let z;
+
+            try {
+              // Replace ^ with ** for proper evaluation
+              const expr = expression.replace(/\^/g, "**");
+              z = math.evaluate(expr, { x: x, y: y });
+
+              // Limit z to prevent extreme values
+              if (typeof z !== "number" || isNaN(z)) z = 0;
+              if (z > size * 2) z = size * 2;
+              if (z < -size * 2) z = -size * 2;
+            } catch (e) {
+              z = 0;
+            }
+
+            target.set(x, y, z);
+          },
+          divisions,
+          divisions
+        );
+
+        // Create material with color based on height
+        const material = new THREE.MeshPhongMaterial({
+          vertexColors: true,
+          side: THREE.DoubleSide,
+          flatShading: true,
+          transparent: true,
+          opacity: 0.85,
+          wireframe: false,
+        });
+
+        // Add vertex colors based on height
+        const positions = geometry.attributes.position;
+        const colors = [];
+        const color = new THREE.Color();
+
+        for (let i = 0; i < positions.count; i++) {
+          const z = positions.getZ(i);
+          // Map z value to color (blue to red gradient)
+          const t = (z + size) / (2 * size);
+          color.setHSL(0.6 * (1 - t), 0.8, 0.5 + t * 0.3);
+          colors.push(color.r, color.g, color.b);
+        }
+
+        geometry.setAttribute(
+          "color",
+          new THREE.Float32BufferAttribute(colors, 3)
+        );
+
+        // Create mesh
+        graphMesh = new THREE.Mesh(geometry, material);
+        scene.add(graphMesh);
+
+        // Update active button
+        document.querySelectorAll(".graph-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        // Find and activate the corresponding button
+        const buttons = document.querySelectorAll(".graph-btn");
+        for (let btn of buttons) {
+          if (btn.textContent === "Paraboloid" && expression === "x^2 + y^2") {
+            btn.classList.add("active");
+            break;
+          } else if (
+            btn.textContent === "Gelombang" &&
+            expression === "sin(x) + cos(y)"
+          ) {
+            btn.classList.add("active");
+            break;
+          } else if (
+            btn.textContent === "Bidang Miring" &&
+            expression === "x*y/2"
+          ) {
+            btn.classList.add("active");
+            break;
+          } else if (
+            btn.textContent === "Radial" &&
+            expression === "sin(sqrt(x^2 + y^2))"
+          ) {
+            btn.classList.add("active");
+            break;
+          }
+        }
+      }
+
+      function plotCustomFunction() {
+        const funcInput = document.getElementById("custom-function").value;
+        if (funcInput) {
+          plot3DFunction(funcInput);
+
+          // Update active button
+          document.querySelectorAll(".graph-btn").forEach((btn) => {
+            btn.classList.remove("active");
+          });
+        }
+      }
+
+      function onWindowResize() {
+        const container = document.getElementById("graph3d");
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      // Initialize the page
+      document.addEventListener("DOMContentLoaded", function () {
+        init3DGraph();
+        MathJax.typesetPromise();
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Navbar scroll effect
+        const nav = document.getElementById("main-nav");
+        window.addEventListener("scroll", function () {
+          if (window.scrollY > 10) {
+            nav.classList.add("shadow-xl");
+            nav.classList.add("bg-blue-800");
+          } else {
+            nav.classList.remove("shadow-xl");
+            nav.classList.remove("bg-blue-800");
+          }
+        });
+
+        // Font size adjustment
+        const content = document.getElementById("ebook-content");
+        const increaseBtn = document.getElementById("font-increase");
+        const decreaseBtn = document.getElementById("font-decrease");
+
+        let currentFontSize = 16; // Default 1rem = 16px
+
+        increaseBtn.addEventListener("click", function () {
+          if (currentFontSize < 24) {
+            currentFontSize += 2;
+            content.style.fontSize = currentFontSize + "px";
+          }
+        });
+
+        decreaseBtn.addEventListener("click", function () {
+          if (currentFontSize > 10) {
+            currentFontSize -= 2;
+            content.style.fontSize = currentFontSize + "px";
+          }
+        });
+
+        // Fullscreen functionality
+        const fullscreenBtn = document.getElementById("fullscreen-btn");
+        fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+        function toggleFullscreen() {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch((err) => {
+              console.error(
+                `Error attempting to enable fullscreen: ${err.message}`
+              );
+            });
+            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+              fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+          }
+        }
+
+        // Scroll progress tracking
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+        const sections = document.querySelectorAll(".section-content");
+        const totalSections = sections.length;
+        let totalReadingTime = 0;
+
+        // Calculate total reading time
+        sections.forEach((section) => {
+          totalReadingTime += parseInt(
+            section.getAttribute("data-reading-time")
+          );
+        });
+
+        // Update reading time as user scrolls
+        function updateReadingInfo() {
+          let visibleSection = 0;
+          let totalTimeViewed = 0;
+          let currentLevel = 1;
+
+          sections.forEach((section, index) => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= 150 && rect.bottom >= 150) {
+              // 150px from top as buffer
+              visibleSection = index + 1;
+              currentLevel = parseInt(section.getAttribute("data-level"));
+            }
+
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+              // Section is at least partially visible
+              const visibleRatio = Math.min(
+                1,
+                (Math.min(rect.bottom, window.innerHeight) -
+                  Math.max(rect.top, 0)) /
+                  rect.height
+              );
+              totalTimeViewed +=
+                visibleRatio *
+                parseInt(section.getAttribute("data-reading-time"));
+            }
+          });
+
+          // Update progress bar
+          const progressPercentage = (visibleSection / totalSections) * 100;
+          progressBar.style.width = `${progressPercentage}%`;
+          progressText.textContent = `Section ${visibleSection} of ${totalSections}`;
+
+          // Update reading time
+          const remainingTime = Math.max(0, totalReadingTime - totalTimeViewed);
+          document.getElementById(
+            "reading-time"
+          ).textContent = `Estimated reading time: ${Math.ceil(
+            remainingTime
+          )} minutes remaining`;
+        }
+
+        window.addEventListener("scroll", updateReadingInfo);
+        window.addEventListener("resize", updateReadingInfo);
+        updateReadingInfo(); // Initial call
+
+        // Smooth scroll for table of contents
+        document.querySelectorAll('aside a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute("href");
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+              setTimeout(() => {
+                targetElement.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }, 100); // 100ms delay
+            }
+          });
+        });
+
+        // Navigation buttons
+        const nextBtn = document.getElementById("next-btn");
+        const prevBtn = document.getElementById("prev-btn");
+
+        nextBtn.addEventListener("click", function () {
+          let currentIndex = getCurrentSectionIndex();
+          if (currentIndex < sections.length - 1) {
+            sections[currentIndex + 1].scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          } else {
+            // If at last section, loop back to first
+            sections[0].scrollIntoView({ behavior: "smooth" });
+          }
+        });
+
+        prevBtn.addEventListener("click", function () {
+          let currentIndex = getCurrentSectionIndex();
+          if (currentIndex > 0) {
+            sections[currentIndex - 1].scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          } else {
+            // If at first section, go to last
+            sections[sections.length - 1].scrollIntoView({
+              behavior: "smooth",
+            });
+          }
+        });
+
+        function getCurrentSectionIndex() {
+          for (let i = 0; i < sections.length; i++) {
+            const rect = sections[i].getBoundingClientRect();
+            // Consider section active if it's more than 40% visible
+            if (
+              rect.top <= window.innerHeight * 0.6 &&
+              rect.bottom >= window.innerHeight * 0.4
+            ) {
+              return i;
+            }
+          }
+          return 0; // default to first section
+        }
+      });
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="mb-4 md:mb-0">
+            <div class="flex items-center">
+              <i class="fas fa-square-root-alt text-2xl mr-2"></i>
+              <span class="text-xl font-bold">MathLab</span>
+            </div>
+            <p class="text-gray-400 mt-2">
+              Platform Pembelajaran Matematika Interaktif
+            </p>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-sm"
+        >
+          &copy; 2025 MathLab by Anomali Group. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
